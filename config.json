@@ -1,0 +1,27 @@
+{
+  "client": {
+    "devs": ["793780954803601429"],
+    "testServers": ["1175881177391955998"]
+  },
+  "tickets": {
+    "categories": ["1175904283087098017", "1175904299470049380", "1175904318843523133"],
+    "types": [
+      {
+        "id": "plugins",
+        "label": "Pluginy",
+        "emoji": "🔌",
+        "description": "Zamów plugin na swój serwer!",
+        "roleId": "1175894011945435237",
+        "logChannelId": "1175893860149375077"
+      },
+      {
+        "id": "builds",
+        "label": "Budowle",
+        "emoji": "🏠",
+        "description": "Zamów budowle/mapę na swój serwer!",
+        "roleId": "1175894053699719249",
+        "logChannelId": "1175894406822363186"
+      }
+    ]
+  }
+}
