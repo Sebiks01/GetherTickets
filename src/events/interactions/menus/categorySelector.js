@@ -57,13 +57,6 @@ module.exports = {
       type: category,
     });
 
-    await interaction.message.delete();
-
-    await interaction.channel.permissionOverwrites.edit(interaction.user, {
-        SendMessages: true,
-        AttachFiles: true
-    })
-
     const orderManagerEmbed = new EmbedBuilder()
       .setTitle('Zamówienie')
       .setDescription('Opisz zamówienie zgodnie z poleceniami poniżej. \nOdpowiedzi na każde pytanie podawaj w jednej wiadomości.')
@@ -81,7 +74,7 @@ module.exports = {
         .setStyle(ButtonStyle.Danger)
     );
 
-    await interaction.channel.send({
+    await interaction.message.edit({
       embeds: [orderManagerEmbed],
       components: [orderManagerActionRow],
     });
@@ -91,8 +84,12 @@ module.exports = {
       .setDescription(ticketConfig.orderDescriptionEmbed)
       .setColor('#00ff00');
 
-    interaction.channel.send({
+    await interaction.channel.send({
         embeds: [orderDescriptionEmbed]
     });
+
+    interaction.channel.permissionOverwrites.edit(interaction.user, {
+        SendMessages: true
+    })
   },
 };

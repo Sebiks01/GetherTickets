@@ -12,7 +12,16 @@ module.exports = {
    */
 
   async execute(_, interaction) {
-    if (!interaction.isButton() ||interaction.customId !== 'gethertickets-order-manager-cancel') return;
+    if (
+        !interaction.isButton() || 
+        (
+            interaction.customId !== 'gethertickets-order-manager-cancel' && 
+            interaction.customId !== 'gethertickets-order-summary-cancel' &&
+            interaction.customId !== 'gethertickets-regulations-decline'
+        )
+    ) return;
+
+    await interaction.deferUpdate();
 
     const result = await ticketsSchema.findOne({
       userId: interaction.user.id,
@@ -20,7 +29,7 @@ module.exports = {
     });
 
     if (!result)
-      return interaction.reply({
+      return interaction.followUp({
         content: 'Ten ticket nie należy do ciebie!',
         ephemeral: true,
       });

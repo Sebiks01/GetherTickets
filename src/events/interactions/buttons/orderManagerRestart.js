@@ -1,6 +1,7 @@
 const { Client, Events, ButtonInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 const ticketsSchema = require('../../../schemas/tickets.js');
+const { config } = require('../../../util/config.js');
 
 // Event
 module.exports = {
@@ -14,19 +15,18 @@ module.exports = {
   async execute(_, interaction) {
     if (!interaction.isButton() ||interaction.customId !== 'gethertickets-order-manager-restart') return;
 
+    await interaction.deferUpdate();
+
     const result = await ticketsSchema.findOne({
       userId: interaction.user.id,
       channelId: interaction.channel.id,
     });
 
     if (!result)
-      return interaction.reply({
+      return interaction.followUp({
         content: 'Ten ticket nie należy do ciebie!',
         ephemeral: true,
       });
-
-    const messages = await interaction.channel.messages.fetch();
-    messages.forEach(async (message) => await message.delete());
 
     await ticketsSchema.updateOne({
       userId: interaction.user.id,
@@ -36,6 +36,9 @@ module.exports = {
       orderBudget: "",
       orderDeadline: "",
     });
+
+    const messages = await interaction.channel.messages.fetch();
+    await interaction.channel.bulkDelete(messages);
 
     const ticketConfig = config.tickets.types.find((ticketType) => ticketType.id === result.type);
 

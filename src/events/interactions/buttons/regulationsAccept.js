@@ -23,19 +23,18 @@ module.exports = {
   async execute(_, interaction) {
     if (!interaction.isButton() ||interaction.customId !== 'gethertickets-regulations-accept') return;
 
+    await interaction.deferUpdate();
+
     const result = await ticketsSchema.findOne({
       userId: interaction.user.id,
       channelId: interaction.channel.id,
     });
 
     if (!result)
-      return interaction.reply({
+      return interaction.followUp({
         content: 'Ten ticket nie należy do ciebie!',
         ephemeral: true,
       });
-
-    await interaction.deferUpdate();
-    await interaction.message.delete();
 
     const categorySelectorEmbed = new EmbedBuilder()
       .setTitle('Wybierz kategorię')
@@ -59,7 +58,7 @@ module.exports = {
 
     const categorySelectorActionRow = new ActionRowBuilder().setComponents(categorySelectorMenu);
 
-    interaction.channel.send({
+    interaction.message.edit({
         embeds: [categorySelectorEmbed],
         components: [categorySelectorActionRow]
     })

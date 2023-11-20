@@ -28,6 +28,8 @@ module.exports = {
   async execute(_, interaction) {
     if (!interaction.isButton() || interaction.customId !== 'gethertickets-create') return;
 
+    await interaction.deferUpdate();
+
     const results = await ticketsSchema.find({ userId: interaction.user.id });
 
     if (results.length >= config.tickets.limit) return interaction.reply({
@@ -65,7 +67,7 @@ module.exports = {
       },
     ]);
 
-    await interaction.reply({
+    await interaction.followUp({
       content: `Stworzono ticket ${ticketChannel}.`,
       ephemeral: true,
     });
@@ -73,8 +75,7 @@ module.exports = {
     await ticketsSchema.create({
       userId: interaction.user.id,
       channelId: ticketChannel.id,
-      type: "none",
-      claimed: false
+      type: "none"
     })
 
     const regulationsEmbed = new EmbedBuilder()
