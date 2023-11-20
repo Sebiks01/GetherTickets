@@ -5,11 +5,11 @@ require('dotenv/config.js');
 const { loadEvents } = require('./handlers/eventsHandler.js');
 const { mongoConnect } = require('./util/mongoConnector.js');
 
-const { Guilds } = GatewayIntentBits;
+const { Guilds, GuildMembers, GuildMessages, MessageContent } = GatewayIntentBits;
 
 // Creating the client
 const client = new Client({
-  intents: [Guilds],
+  intents: [ Guilds, GuildMembers, GuildMessages, MessageContent ],
 });
 
 // Creating a new collection of commands
