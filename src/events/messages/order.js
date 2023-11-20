@@ -186,6 +186,7 @@ module.exports = {
         before: message.id,
         limit: 1,
       });
+
       await embedMessage.at(0).delete();
       await message.delete();
 
