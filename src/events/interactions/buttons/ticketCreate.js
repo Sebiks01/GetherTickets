@@ -14,7 +14,8 @@ const chalk = require('chalk');
 const { config } = require('../../../util/config.js');
 const ticketsSchema = require('../../../schemas/tickets.js');
 
-const { ViewChannel, ReadMessageHistory, SendMessages, AttachFiles } = PermissionFlagsBits;
+const { ViewChannel, ReadMessageHistory, SendMessages, AttachFiles } =
+  PermissionFlagsBits;
 
 // Event
 module.exports = {
@@ -26,16 +27,21 @@ module.exports = {
    */
 
   async execute(_, interaction) {
-    if (!interaction.isButton() || interaction.customId !== 'gethertickets-create') return;
+    if (
+      !interaction.isButton() ||
+      interaction.customId !== 'gethertickets-create'
+    )
+      return;
 
     await interaction.deferUpdate();
 
     const results = await ticketsSchema.find({ userId: interaction.user.id });
 
-    if (results.length >= config.tickets.limit) return interaction.reply({
-      content: `Osiągnięto limit ticketów.`,
-      ephemeral: true,
-    });
+    if (results.length >= config.tickets.limit)
+      return interaction.reply({
+        content: `Osiągnięto limit ticketów.`,
+        ephemeral: true,
+      });
 
     const categories = config.tickets.categories;
 
@@ -50,7 +56,9 @@ module.exports = {
         await ticketChannel.setParent(categoryId);
         break;
       } catch (err) {
-        console.log(chalk.yellow('[WARN] Invalid categoryId or category is full.'));
+        console.log(
+          chalk.yellow('[WARN] Invalid categoryId or category is full.')
+        );
         continue;
       }
     }
@@ -75,29 +83,31 @@ module.exports = {
     await ticketsSchema.create({
       userId: interaction.user.id,
       channelId: ticketChannel.id,
-      type: "none"
-    })
+      type: 'none',
+    });
 
     const regulationsEmbed = new EmbedBuilder()
       .setTitle('Regulamin')
-      .setDescription('Czy akceptujesz [regulamin](https://discord.com/channels/1175881177391955998/1175918170154995834/1175918242963927091)?')
-      .setColor('#00ff00')
+      .setDescription(
+        'Czy akceptujesz [regulamin](https://discord.com/channels/1175881177391955998/1175918170154995834/1175918242963927091)?'
+      )
+      .setColor('#00ff00');
 
     const regulationsActionRow = new ActionRowBuilder().setComponents(
       new ButtonBuilder()
-      .setCustomId('gethertickets-regulations-accept')
-      .setLabel('Akceptuję')
-      .setStyle(ButtonStyle.Success),
+        .setCustomId('gethertickets-regulations-accept')
+        .setLabel('Akceptuję')
+        .setStyle(ButtonStyle.Success),
 
       new ButtonBuilder()
-      .setCustomId('gethertickets-regulations-decline')
-      .setLabel('Odrzucam')
-      .setStyle(ButtonStyle.Danger),
-    )
+        .setCustomId('gethertickets-regulations-decline')
+        .setLabel('Odrzucam')
+        .setStyle(ButtonStyle.Danger)
+    );
 
     ticketChannel.send({
       embeds: [regulationsEmbed],
-      components: [regulationsActionRow]
+      components: [regulationsActionRow],
     });
   },
 };

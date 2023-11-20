@@ -9,7 +9,7 @@ const { Guilds, GuildMembers, GuildMessages, MessageContent } = GatewayIntentBit
 
 // Creating the client
 const client = new Client({
-  intents: [ Guilds, GuildMembers, GuildMessages, MessageContent ],
+  intents: [Guilds, GuildMembers, GuildMessages, MessageContent],
 });
 
 // Creating a new collection of commands
@@ -32,4 +32,3 @@ client.login(process.env.TOKEN).catch((err) => {
   // Ending the process if the login fails
   process.exit(1);
 });
-

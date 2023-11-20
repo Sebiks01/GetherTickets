@@ -22,15 +22,19 @@ module.exports = {
    */
 
   async execute(_, interaction) {
-    if (!interaction.isStringSelectMenu() || interaction.customId !== 'gethertickets-category-selector') return;
+    if (
+      !interaction.isStringSelectMenu() ||
+      interaction.customId !== 'gethertickets-category-selector'
+    )
+      return;
 
     await interaction.deferUpdate();
 
     const result = await ticketsSchema.findOne({
-        userId: interaction.user.id,
-        channelId: interaction.channel.id,
-      });
-  
+      userId: interaction.user.id,
+      channelId: interaction.channel.id,
+    });
+
     if (!result)
       return interaction.followUp({
         content: 'Ten ticket nie należy do ciebie!',
@@ -38,11 +42,19 @@ module.exports = {
       });
 
     const category = interaction.values[0].split('-')[2];
-    const ticketConfig = config.tickets.types.find((ticketType) => ticketType.id === category);
-    const logChannel = await interaction.guild.channels.fetch(ticketConfig.logChannelId);
+    const ticketConfig = config.tickets.types.find(
+      (ticketType) => ticketType.id === category
+    );
+    const logChannel = await interaction.guild.channels.fetch(
+      ticketConfig.logChannelId
+    );
 
     if (!logChannel) {
-      console.log(chalk.yellow(`[WARN] Log channel not found for "${ticketConfig.id}" tickets!`));
+      console.log(
+        chalk.yellow(
+          `[WARN] Log channel not found for "${ticketConfig.id}" tickets!`
+        )
+      );
 
       return interaction.followUp({
         content: 'Nie znaleziono kanału logów. Skontaktuj się z administracją.',
@@ -50,16 +62,21 @@ module.exports = {
       });
     }
 
-    await ticketsSchema.updateOne({
-      userId: interaction.user.id,
-      channelId: interaction.channel.id,
-    }, {
-      type: category,
-    });
+    await ticketsSchema.updateOne(
+      {
+        userId: interaction.user.id,
+        channelId: interaction.channel.id,
+      },
+      {
+        type: category,
+      }
+    );
 
     const orderManagerEmbed = new EmbedBuilder()
       .setTitle('Zamówienie')
-      .setDescription('Opisz zamówienie zgodnie z poleceniami poniżej. \nOdpowiedzi na każde pytanie podawaj w jednej wiadomości.')
+      .setDescription(
+        'Opisz zamówienie zgodnie z poleceniami poniżej. \nOdpowiedzi na każde pytanie podawaj w jednej wiadomości.'
+      )
       .setColor('#00ff00');
 
     const orderManagerActionRow = new ActionRowBuilder().setComponents(
@@ -85,11 +102,11 @@ module.exports = {
       .setColor('#00ff00');
 
     await interaction.channel.send({
-        embeds: [orderDescriptionEmbed]
+      embeds: [orderDescriptionEmbed],
     });
 
     interaction.channel.permissionOverwrites.edit(interaction.user, {
-        SendMessages: true
-    })
+      SendMessages: true,
+    });
   },
 };

@@ -16,11 +16,13 @@ const schema = new Schema({
   orderDeadline: String,
   logMessageId: String,
   awaitingAnswer: Boolean,
-  questions: [{
-    userId: String,
-    question: String,
-  }],
-  answers: [String]
+  questions: [
+    {
+      userId: String,
+      question: String,
+    },
+  ],
+  answers: [String],
 });
 
 const name = 'tickets';

@@ -1,4 +1,9 @@
-const { ChatInputCommandInteraction, AutocompleteInteraction, Client, Events } = require('discord.js');
+const {
+  ChatInputCommandInteraction,
+  AutocompleteInteraction,
+  Client,
+  Events,
+} = require('discord.js');
 const chalk = require('chalk');
 
 const { config } = require('../../util/config.js');
@@ -14,27 +19,34 @@ module.exports = {
 
   async execute(client, interaction) {
     // Checking if interaction is a command interaction
-    if (!interaction.isChatInputCommand() && !interaction.isAutocomplete()) return;
+    if (!interaction.isChatInputCommand() && !interaction.isAutocomplete())
+      return;
 
     // Fetching the command from the client commands collection
     const command = client.commands.get(interaction.commandName);
 
     // Checking if the command exists
     if (!command) {
-        console.log(chalk.yellow(`[WARN] Command ${interaction.commandName} is outdated.`));
+      console.log(
+        chalk.yellow(`[WARN] Command ${interaction.commandName} is outdated.`)
+      );
 
-        return interaction.reply({
-          content: 'This command is outdated.',
-          ephemeral: true,
-        });
-      }
+      return interaction.reply({
+        content: 'This command is outdated.',
+        ephemeral: true,
+      });
+    }
 
     if (interaction.isAutocomplete()) {
       // Executing autocomplete for the command
       try {
         command.autocomplete(client, interaction);
       } catch (err) {
-        console.log(chalk.yellow(`[WARN] Error with autocomplete in ${interaction.commandName} command.`));
+        console.log(
+          chalk.yellow(
+            `[WARN] Error with autocomplete in ${interaction.commandName} command.`
+          )
+        );
         console.log(err);
       }
 
@@ -51,10 +63,14 @@ module.exports = {
 
     // Executing the command
     try {
-        command.execute(client, interaction);
-      } catch (err) {
-        console.log(chalk.yellow(`[WARN] Error executing ${interaction.commandName} command.`));
-        console.log(err);
-      }
+      command.execute(client, interaction);
+    } catch (err) {
+      console.log(
+        chalk.yellow(
+          `[WARN] Error executing ${interaction.commandName} command.`
+        )
+      );
+      console.log(err);
+    }
   },
 };

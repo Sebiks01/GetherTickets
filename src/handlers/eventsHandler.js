@@ -4,7 +4,7 @@ const chalk = require('chalk');
 const { loadFiles } = require('../util/fileLoader.js');
 
 /**
- * @param {Client} client 
+ * @param {Client} client
  */
 
 async function loadEvents(client) {
@@ -53,7 +53,11 @@ async function loadEvents(client) {
         Status: '🛑',
       });
 
-      console.log(chalk.yellow(`[WARN] Error loading event "${file.split('/').pop().slice(0, -3)}".`));
+      console.log(
+        chalk.yellow(
+          `[WARN] Error loading event "${file.split('/').pop().slice(0, -3)}".`
+        )
+      );
       console.log(err);
     }
   }

@@ -9,7 +9,9 @@ async function mongoConnect() {
     mongoose
       .connect(process.env.MONGO_URI)
       .then((mongoose) => {
-        console.log(chalk.green('[INFO] Successfully connected to the database.'));
+        console.log(
+          chalk.green('[INFO] Successfully connected to the database.')
+        );
 
         resolve(mongoose);
       })
@@ -21,6 +23,6 @@ async function mongoConnect() {
         process.exit(1);
       });
   });
-};
+}
 
 module.exports = { mongoConnect };

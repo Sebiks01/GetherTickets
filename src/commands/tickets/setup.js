@@ -45,8 +45,11 @@ module.exports = {
         .setStyle(ButtonStyle.Success)
     );
 
-    await channel.send({ embeds: [ticketEmbed], components: [ticketActionRow] });
+    await channel.send({
+      embeds: [ticketEmbed],
+      components: [ticketActionRow],
+    });
 
-    interaction.reply({ content: 'Ticket message sent!', ephemeral: true })
+    interaction.reply({ content: 'Ticket message sent!', ephemeral: true });
   },
 };

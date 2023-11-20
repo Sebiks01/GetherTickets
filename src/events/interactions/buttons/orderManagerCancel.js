@@ -13,13 +13,12 @@ module.exports = {
 
   async execute(_, interaction) {
     if (
-        !interaction.isButton() || 
-        (
-            interaction.customId !== 'gethertickets-order-manager-cancel' && 
-            interaction.customId !== 'gethertickets-order-summary-cancel' &&
-            interaction.customId !== 'gethertickets-regulations-decline'
-        )
-    ) return;
+      !interaction.isButton() ||
+      (interaction.customId !== 'gethertickets-order-manager-cancel' &&
+        interaction.customId !== 'gethertickets-order-summary-cancel' &&
+        interaction.customId !== 'gethertickets-regulations-decline')
+    )
+      return;
 
     await interaction.deferUpdate();
 

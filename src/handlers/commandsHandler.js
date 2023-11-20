@@ -5,7 +5,7 @@ const { loadFiles } = require('../util/fileLoader.js');
 const { config } = require('../util/config.js');
 
 /**
- * @param {Client} client 
+ * @param {Client} client
  */
 
 async function loadCommands(client) {
@@ -34,12 +34,14 @@ async function loadCommands(client) {
       client.commands.set(command.data.name, command);
 
       // Checking if command is developer only
-      command.dev ? devCommands.push(command.data.toJSON()) : applicationCommands.push(command.data.toJSON());
+      command.dev
+        ? devCommands.push(command.data.toJSON())
+        : applicationCommands.push(command.data.toJSON());
 
       // Adding command to commands table
-      commandsTable.push({ 
-        Command: command.data.name, 
-        Status: '✅' 
+      commandsTable.push({
+        Command: command.data.name,
+        Status: '✅',
       });
     } catch (err) {
       // Adding errored command file to commands table
@@ -48,7 +50,14 @@ async function loadCommands(client) {
         Status: '🛑',
       });
 
-      console.log(chalk.yellow(`[WARN] Error loading command "${file.split('/').pop().slice(0, -3)}".`));
+      console.log(
+        chalk.yellow(
+          `[WARN] Error loading command "${file
+            .split('/')
+            .pop()
+            .slice(0, -3)}".`
+        )
+      );
       console.log(err);
     }
   }
@@ -63,7 +72,11 @@ async function loadCommands(client) {
     try {
       testServer = await client.guilds.fetch(testServerId);
     } catch (err) {
-      console.log(chalk.yellow(`[WARN] Error fetching test server with id "${testServerId}".`));
+      console.log(
+        chalk.yellow(
+          `[WARN] Error fetching test server with id "${testServerId}".`
+        )
+      );
       console.log(err);
 
       continue;

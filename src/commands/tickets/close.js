@@ -52,10 +52,10 @@ module.exports = {
       .setAuthor({
         name: `Zamknięte przez ${interaction.user.username}`,
         iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
-      })
+      });
 
     await interaction.editReply({
-        embeds: [closeEmbed],
+      embeds: [closeEmbed],
     });
 
     const transcipt = await transcipts.createTranscript(interaction.channel, {
@@ -66,20 +66,28 @@ module.exports = {
     });
 
     if (!fs.existsSync(`transcripts/${result.userId}`)) {
-        fs.mkdirSync(`transcripts/${result.userId}`);
-        console.log(chalk.green(`[INFO] Transcript directory created for user with id ${result.userId}.`));
+      fs.mkdirSync(`transcripts/${result.userId}`);
+      console.log(
+        chalk.green(
+          `[INFO] Transcript directory created for user with id ${result.userId}.`
+        )
+      );
     }
 
     await interaction.channel.delete();
 
-    fs.writeFile(`transcripts/${result.userId}/${result.type}-${result.channelId}-transcript.html`, transcipt, (err) => {
+    fs.writeFile(
+      `transcripts/${result.userId}/${result.type}-${result.channelId}-transcript.html`,
+      transcipt,
+      (err) => {
         if (err) {
-            console.log(chalk.yellow('[WARN] Could not save transcript file.'));
-            console.log(err);
-            return;
-        };
+          console.log(chalk.yellow('[WARN] Could not save transcript file.'));
+          console.log(err);
+          return;
+        }
 
         console.log(chalk.green('[INFO] Transcript file saved!'));
-    })
+      }
+    );
   },
 };

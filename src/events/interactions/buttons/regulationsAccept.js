@@ -21,7 +21,11 @@ module.exports = {
    */
 
   async execute(_, interaction) {
-    if (!interaction.isButton() ||interaction.customId !== 'gethertickets-regulations-accept') return;
+    if (
+      !interaction.isButton() ||
+      interaction.customId !== 'gethertickets-regulations-accept'
+    )
+      return;
 
     await interaction.deferUpdate();
 
@@ -56,11 +60,13 @@ module.exports = {
       );
     });
 
-    const categorySelectorActionRow = new ActionRowBuilder().setComponents(categorySelectorMenu);
+    const categorySelectorActionRow = new ActionRowBuilder().setComponents(
+      categorySelectorMenu
+    );
 
     interaction.message.edit({
-        embeds: [categorySelectorEmbed],
-        components: [categorySelectorActionRow]
-    })
+      embeds: [categorySelectorEmbed],
+      components: [categorySelectorActionRow],
+    });
   },
 };

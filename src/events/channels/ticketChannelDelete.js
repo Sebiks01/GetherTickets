@@ -1,4 +1,9 @@
-const { Client, Events, GuildTextBasedChannel, ChannelType } = require('discord.js');
+const {
+  Client,
+  Events,
+  GuildTextBasedChannel,
+  ChannelType,
+} = require('discord.js');
 
 const ticketsSchema = require('../../schemas/tickets.js');
 

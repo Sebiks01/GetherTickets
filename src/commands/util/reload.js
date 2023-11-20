@@ -59,7 +59,8 @@ module.exports = {
         });
       }
 
-      default: return;
+      default:
+        return;
     }
   },
 };

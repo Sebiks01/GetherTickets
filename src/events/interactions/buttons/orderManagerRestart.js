@@ -1,4 +1,12 @@
-const { Client, Events, ButtonInteraction, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+const {
+  Client,
+  Events,
+  ButtonInteraction,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} = require('discord.js');
 
 const ticketsSchema = require('../../../schemas/tickets.js');
 const { config } = require('../../../util/config.js');
@@ -13,7 +21,11 @@ module.exports = {
    */
 
   async execute(_, interaction) {
-    if (!interaction.isButton() ||interaction.customId !== 'gethertickets-order-manager-restart') return;
+    if (
+      !interaction.isButton() ||
+      interaction.customId !== 'gethertickets-order-manager-restart'
+    )
+      return;
 
     await interaction.deferUpdate();
 
@@ -28,23 +40,30 @@ module.exports = {
         ephemeral: true,
       });
 
-    await ticketsSchema.updateOne({
-      userId: interaction.user.id,
-      channelId: interaction.channel.id,
-    }, {
-      orderDescription: "",
-      orderBudget: "",
-      orderDeadline: "",
-    });
+    await ticketsSchema.updateOne(
+      {
+        userId: interaction.user.id,
+        channelId: interaction.channel.id,
+      },
+      {
+        orderDescription: '',
+        orderBudget: '',
+        orderDeadline: '',
+      }
+    );
 
     const messages = await interaction.channel.messages.fetch();
     await interaction.channel.bulkDelete(messages);
 
-    const ticketConfig = config.tickets.types.find((ticketType) => ticketType.id === result.type);
+    const ticketConfig = config.tickets.types.find(
+      (ticketType) => ticketType.id === result.type
+    );
 
     const orderManagerEmbed = new EmbedBuilder()
       .setTitle('Zamówienie')
-      .setDescription('Opisz zamówienie zgodnie z poleceniami poniżej. \nOdpowiedzi na każde pytanie podawaj w jednej wiadomości.')
+      .setDescription(
+        'Opisz zamówienie zgodnie z poleceniami poniżej. \nOdpowiedzi na każde pytanie podawaj w jednej wiadomości.'
+      )
       .setColor('#00ff00');
 
     const orderManagerActionRow = new ActionRowBuilder().setComponents(
@@ -70,7 +89,7 @@ module.exports = {
       .setColor('#00ff00');
 
     interaction.channel.send({
-        embeds: [orderDescriptionEmbed]
+      embeds: [orderDescriptionEmbed],
     });
   },
 };
