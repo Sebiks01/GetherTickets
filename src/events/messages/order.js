@@ -46,7 +46,83 @@ module.exports = {
         before: message.id,
         limit: 1,
       });
+
       await message.delete();
+
+      if (!ticketConfig.orderBudgetEnabled) {
+        if (!ticketConfig.orderDeadlineEnabled) {
+          await ticketsSchema.updateOne(
+            {
+              userId: message.author.id,
+              channelId: message.channel.id,
+            },
+            {
+              orderDescription: message.content,
+              orderBudget: '-',
+              orderDeadline: '-',
+            }
+          );
+
+          const messages = await message.channel.messages.fetch();
+          await message.channel.bulkDelete(messages);
+
+          let orderSummaryDescription = '';
+
+          orderSummaryDescription += `**Opis zamówienia:** ${result.orderDescription}\n`;
+          orderSummaryDescription += `**Pytania i odpowiedzi:**`;
+
+          const orderSummaryEmbed = new EmbedBuilder()
+            .setTitle('Podsumowanie zamówienia')
+            .setDescription(orderSummaryDescription)
+            .setColor('#00ff00');
+
+          const orderSummaryActionRow = new ActionRowBuilder().setComponents(
+            new ButtonBuilder()
+              .setCustomId('gethertickets-order-summary-accept')
+              .setLabel('Wyślij')
+              .setStyle(ButtonStyle.Success),
+
+            new ButtonBuilder()
+              .setCustomId('gethertickets-order-summary-edit')
+              .setLabel('Edytuj')
+              .setStyle(ButtonStyle.Primary),
+
+            new ButtonBuilder()
+              .setCustomId('gethertickets-order-summary-cancel')
+              .setLabel('Anuluj')
+              .setStyle(ButtonStyle.Danger)
+          );
+
+          return message.channel.send({
+            embeds: [orderSummaryEmbed],
+            components: [orderSummaryActionRow],
+          });
+        } else {
+          await ticketsSchema.updateOne(
+            {
+              userId: message.author.id,
+              channelId: message.channel.id,
+            },
+            {
+              orderDescription: message.content,
+              orderBudget: '-',
+            }
+          );
+
+          const orderDeadlineEmbed = new EmbedBuilder()
+            .setTitle('Termin zamówienia')
+            .setDescription(ticketConfig.orderDeadlineEmbed)
+            .setColor('#00ff00');
+
+          await message.channel.permissionOverwrites.edit(message.author, {
+            SendMessages: true,
+          });
+
+          return embedMessage.at(0).edit({
+            embeds: [orderDeadlineEmbed],
+          });
+        }
+      }
 
       await ticketsSchema.updateOne(
         {
@@ -81,7 +157,57 @@ module.exports = {
         before: message.id,
         limit: 1,
       });
+
       await message.delete();
+
+      if (!ticketConfig.orderDeadlineEnabled) {
+        await ticketsSchema.updateOne(
+          {
+            userId: message.author.id,
+            channelId: message.channel.id,
+          },
+          {
+            orderBudget: message.content,
+            orderDeadline: '-',
+          }
+        );
+
+        const messages = await message.channel.messages.fetch();
+        await message.channel.bulkDelete(messages);
+
+        let orderSummaryDescription = '';
+
+        orderSummaryDescription += `**Opis zamówienia:** ${result.orderDescription}\n`;
+        orderSummaryDescription += `**Budżet zamówienia:** ${result.orderBudget}\n`;
+        orderSummaryDescription += `**Pytania i odpowiedzi:**`;
+
+        const orderSummaryEmbed = new EmbedBuilder()
+          .setTitle('Podsumowanie zamówienia')
+          .setDescription(orderSummaryDescription)
+          .setColor('#00ff00');
+
+        const orderSummaryActionRow = new ActionRowBuilder().setComponents(
+          new ButtonBuilder()
+            .setCustomId('gethertickets-order-summary-accept')
+            .setLabel('Wyślij')
+            .setStyle(ButtonStyle.Success),
+
+          new ButtonBuilder()
+            .setCustomId('gethertickets-order-summary-edit')
+            .setLabel('Edytuj')
+            .setStyle(ButtonStyle.Primary),
+
+          new ButtonBuilder()
+            .setCustomId('gethertickets-order-summary-cancel')
+            .setLabel('Anuluj')
+            .setStyle(ButtonStyle.Danger)
+        );
+
+        return message.channel.send({
+          embeds: [orderSummaryEmbed],
+          components: [orderSummaryActionRow],
+        });
+      }
 
       await ticketsSchema.updateOne(
         {

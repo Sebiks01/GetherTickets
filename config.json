@@ -19,7 +19,9 @@
         "roleId": "1175894011945435237",
         "logChannelId": "1175893860149375077",
         "orderDescriptionEmbed": "Opisz zamówienie jak najlepiej, podaj wersje oraz działanie pluginu.",
+        "orderBudgetEnabled": true,
         "orderBudgetEmbed": "Podaj budżet na zamówienie.",
+        "orderDeadlineEnabled": true,
         "orderDeadlineEmbed": "Podaj termin wykonania zamówienia."
       },
       {
@@ -30,7 +32,9 @@
         "roleId": "1175894053699719249",
         "logChannelId": "1175894406822363186",
         "orderDescriptionEmbed": "Opisz zamówienie jak najlepiej, podaj wersje oraz wygląd mapy/budowli.",
+        "orderBudgetEnabled": true,
         "orderBudgetEmbed": "Podaj budżet na zamówienie.",
+        "orderDeadlineEnabled": true,
         "orderDeadlineEmbed": "Podaj termin wykonania zamówienia."
       }
     ]
