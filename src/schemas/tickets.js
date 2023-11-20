@@ -7,13 +7,19 @@ const reqString = {
   required: true,
 };
 
+const reqBoolean = {
+  type: Boolean,
+  required: true,
+};
+
 const schema = new Schema({
   userId: reqString,
+  channelId: reqString,
   type: reqString,
-  claimed: {
-    type: Boolean,
-    required: true,
-  },
+  claimed: reqBoolean,
+  orderDescription: String,
+  orderBudget: String,
+  orderDeadline: String,
 });
 
 const name = 'tickets';
