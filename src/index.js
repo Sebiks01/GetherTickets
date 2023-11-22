@@ -18,6 +18,8 @@ client.commands = new Collection();
 // Creating a new collection of events
 client.events = new Collection();
 
+client.setMaxListeners(22);
+
 // Connecting to the database
 mongoConnect();
 
