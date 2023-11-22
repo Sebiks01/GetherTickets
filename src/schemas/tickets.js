@@ -18,11 +18,10 @@ const schema = new Schema({
   awaitingAnswer: Boolean,
   questions: [
     {
-      userId: String,
       question: String,
+      answer: String,
     },
   ],
-  answers: [String],
 });
 
 const name = 'tickets';

@@ -62,8 +62,12 @@ module.exports = {
       });
     }
 
+    const orderInformationEmbed = new EmbedBuilder()
+      .setDescription('Twoje zamówienie zostało wsyłane, oczekuj na odpowiedź!')
+      .setColor('#00ff00');
+
     await interaction.message.edit({
-      embeds: [interaction.message.embeds[0]],
+      embeds: [interaction.message.embeds[0], orderInformationEmbed],
       components: [],
     });
 
@@ -98,5 +102,10 @@ module.exports = {
         logMessageId: logMessage.id,
       }
     );
+
+    interaction.followUp({
+      content: 'Wysłano zamówienie, oczekuj na odpowiedź!',
+      ephemeral: true,
+    });
   },
 };

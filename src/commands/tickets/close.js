@@ -3,6 +3,7 @@ const {
   ChatInputCommandInteraction,
   Client,
   EmbedBuilder,
+  PermissionFlagsBits,
 } = require('discord.js');
 const transcipts = require('discord-html-transcripts');
 const chalk = require('chalk');
@@ -15,7 +16,8 @@ const ticketsSchema = require('../../schemas/tickets.js');
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('close')
-    .setDescription('Closes the ticket.'),
+    .setDescription('Closes the ticket.')
+    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
   /**
    * @param { ChatInputCommandInteraction } interaction

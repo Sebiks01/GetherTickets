@@ -44,7 +44,6 @@ module.exports = {
 
       const embedMessage = await message.channel.messages.fetch({
         before: message.id,
-        limit: 1,
       });
 
       await message.delete();
@@ -68,7 +67,7 @@ module.exports = {
 
           let orderSummaryDescription = '';
 
-          orderSummaryDescription += `**Opis zamówienia:** ${result.orderDescription}\n`;
+          orderSummaryDescription += `**Opis zamówienia:** ${message.content}\n`;
           orderSummaryDescription += `**Pytania i odpowiedzi:**`;
 
           const orderSummaryEmbed = new EmbedBuilder()
@@ -118,9 +117,12 @@ module.exports = {
             SendMessages: true,
           });
 
-          return embedMessage.at(0).edit({
-            embeds: [orderDeadlineEmbed],
-          });
+          return embedMessage
+            .reverse()
+            .at(1)
+            .edit({
+              embeds: [orderDeadlineEmbed],
+            });
         }
       }
 
@@ -143,9 +145,12 @@ module.exports = {
         SendMessages: true,
       });
 
-      return embedMessage.at(0).edit({
-        embeds: [orderBudgetEmbed],
-      });
+      return embedMessage
+        .reverse()
+        .at(1)
+        .edit({
+          embeds: [orderBudgetEmbed],
+        });
     }
 
     if (result.orderBudget === undefined || result.orderBudget === '') {
@@ -155,7 +160,6 @@ module.exports = {
 
       const embedMessage = await message.channel.messages.fetch({
         before: message.id,
-        limit: 1,
       });
 
       await message.delete();
@@ -178,7 +182,7 @@ module.exports = {
         let orderSummaryDescription = '';
 
         orderSummaryDescription += `**Opis zamówienia:** ${result.orderDescription}\n`;
-        orderSummaryDescription += `**Budżet zamówienia:** ${result.orderBudget}\n`;
+        orderSummaryDescription += `**Budżet zamówienia:** ${message.content}\n`;
         orderSummaryDescription += `**Pytania i odpowiedzi:**`;
 
         const orderSummaryEmbed = new EmbedBuilder()
@@ -228,9 +232,12 @@ module.exports = {
         SendMessages: true,
       });
 
-      return embedMessage.at(0).edit({
-        embeds: [orderDeadlineEmbed],
-      });
+      return embedMessage
+        .reverse()
+        .at(1)
+        .edit({
+          embeds: [orderDeadlineEmbed],
+        });
     }
 
     if (result.orderDeadline === undefined || result.orderDeadline === '') {
@@ -283,105 +290,6 @@ module.exports = {
       return message.channel.send({
         embeds: [orderSummaryEmbed],
         components: [orderSummaryActionRow],
-      });
-    }
-
-    if (result.awaitingAnswer) {
-      await message.channel.permissionOverwrites.edit(message.author, {
-        SendMessages: false,
-      });
-
-      const logChannel = await message.guild.channels.fetch(
-        ticketConfig.logChannelId
-      );
-
-      if (!logChannel) {
-        console.log(
-          chalk.yellow(
-            `[WARN] Log channel not found for "${ticketConfig.id}" tickets!`
-          )
-        );
-
-        return message.channel.send({
-          content:
-            'Nie znaleziono kanału logów. Skontaktuj się z administracją.',
-        });
-      }
-
-      const embedMessage = await message.channel.messages.fetch({
-        before: message.id,
-        limit: 1,
-      });
-
-      await embedMessage.at(0).delete();
-      await message.delete();
-
-      if (!result.answers) {
-        result.answers = [];
-      }
-
-      result.answers.push(message.content);
-
-      await ticketsSchema.updateOne(
-        {
-          userId: message.author.id,
-          channelId: message.channel.id,
-        },
-        {
-          answers: result.answers,
-          awaitingAnswer: false,
-        }
-      );
-
-      const logMessage = await logChannel.messages.fetch(result.logMessageId);
-
-      const orderLogEmbed = EmbedBuilder.from(logMessage.embeds[0]);
-
-      orderLogEmbed.setFields([]);
-
-      result.questions.forEach(({ userId, question }, index) => {
-        orderLogEmbed.addFields(
-          {
-            name: 'Pytanie',
-            value: question,
-            inline: true,
-          },
-          {
-            name: 'Odpowiedź',
-            value: result.answers[index],
-            inline: true,
-          },
-          {
-            name: 'Zadane przez',
-            value: `<@${userId}>`,
-            inline: true,
-          }
-        );
-      });
-
-      await logMessage.edit({
-        embeds: [orderLogEmbed],
-        components: [
-          new ActionRowBuilder().setComponents(
-            logMessage.components[0].components[0],
-            ButtonBuilder.from(
-              logMessage.components[0].components[1]
-            ).setDisabled(false)
-          ),
-        ],
-      });
-
-      const messages = await message.channel.messages.fetch();
-      await message.channel.bulkDelete(messages);
-
-      const orderSummaryEmbed = new EmbedBuilder()
-        .setTitle('Podsumowanie zamówienia')
-        .setDescription(orderLogEmbed.data.description)
-        .setFields(orderLogEmbed.data.fields)
-        .setColor('#00ff00');
-
-      return message.channel.send({
-        embeds: [orderSummaryEmbed],
       });
     }
   },

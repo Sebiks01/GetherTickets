@@ -5,6 +5,7 @@ const {
   EmbedBuilder,
   ActionRowBuilder,
   ButtonBuilder,
+  ButtonStyle,
 } = require('discord.js');
 
 const ticketsSchema = require('../../../schemas/tickets.js');
@@ -61,14 +62,12 @@ module.exports = {
       result.questions = [];
     }
 
-    result.questions.push({ userId: interaction.user.id, question });
+    result.questions.push({ question, answer: null });
 
-    const orderLogEmbed = EmbedBuilder.from(interaction.message.embeds[0]);
-
-    orderLogEmbed.setFields([]);
-
-    result.questions.forEach(({ userId, question }, index) => {
-      orderLogEmbed.addFields(
+    const orderLogEmbed = EmbedBuilder.from(
+      interaction.message.embeds[0]
+    ).setFields(
+      result.questions.map(({ question, answer }) => [
         {
           name: 'Pytanie',
           value: question,
@@ -76,31 +75,20 @@ module.exports = {
         },
         {
           name: 'Odpowiedź',
-          value: result.answers
-            ? result.answers.length >= index + 1
-              ? result.answers[index]
-              : 'Brak odpowiedzi'
-            : 'Brak odpowiedzi',
+          value: answer || 'Brak odpowiedzi',
           inline: true,
         },
         {
-          name: 'Zadane przez',
-          value: `<@${userId}>`,
-          inline: true,
+          name: '** **',
+          value: '** **',
+          inline: false,
         }
-      );
-    });
+      ]).flat()
+    );
 
     await interaction.message.edit({
       embeds: [orderLogEmbed],
-      components: [
-        new ActionRowBuilder().setComponents(
-          interaction.message.components[0].components[0],
-          ButtonBuilder.from(
-            interaction.message.components[0].components[1]
-          ).setDisabled(true)
-        ),
-      ],
+      components: interaction.message.components,
     });
 
     await ticketsSchema.updateOne(
@@ -127,12 +115,16 @@ module.exports = {
         iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
       });
 
-    await ticketChannel.send({
-      embeds: [questionEmbed],
-    });
+    const questionActionRow = new ActionRowBuilder().setComponents(
+      new ButtonBuilder()
+        .setCustomId(`gethertickets-order-question-answer-${result.questions.length - 1}`)
+        .setLabel('Odpowiedz')
+        .setStyle(ButtonStyle.Secondary)
+    );
 
-    ticketChannel.permissionOverwrites.edit(result.userId, {
-      SendMessages: true,
+    ticketChannel.send({
+      embeds: [questionEmbed],
+      components: [questionActionRow],
     });
   },
 };

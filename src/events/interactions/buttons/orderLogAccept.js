@@ -3,6 +3,11 @@ const {
   Events,
   ButtonInteraction,
   EmbedBuilder,
+  Collection,
+  ModalBuilder,
+  ActionRowBuilder,
+  TextInputBuilder,
+  TextInputStyle,
 } = require('discord.js');
 
 const ticketsSchema = require('../../../schemas/tickets.js');
@@ -24,14 +29,12 @@ module.exports = {
     )
       return;
 
-    await interaction.deferUpdate();
-
     const result = await ticketsSchema.findOne({
       logMessageId: interaction.message.id,
     });
 
     if (!result) {
-      await interaction.followUp({
+      await interaction.reply({
         content: 'To zamówienie zostało zamknięte!',
         ephemeral: true,
       });
@@ -44,7 +47,7 @@ module.exports = {
     );
 
     if (!interaction.member.roles.cache.has(ticketConfig.roleId))
-      return interaction.followUp({
+      return interaction.reply({
         content: 'Nie masz uprawnień do zarządzania tym zamówieniem',
         ephemeral: true,
       });
@@ -54,7 +57,7 @@ module.exports = {
     );
 
     if (!orderChannel) {
-      await interaction.followUp({
+      await interaction.reply({
         content: 'To zamówienie zostało zamknięte!',
         ephemeral: true,
       });
@@ -62,61 +65,21 @@ module.exports = {
       return interaction.message.delete();
     }
 
-    if (result.awaitingAnswer) {
-      await ticketsSchema.updateOne(
-        {
-          logMessageId: interaction.message.id,
-        },
-        {
-          awaitingAnswer: false,
-        }
+    const offerModal = new ModalBuilder()
+      .setCustomId('gethertickets-order-offer-modal')
+      .setTitle('Zaproponuj ofertę')
+      .setComponents(
+        new ActionRowBuilder().setComponents(
+          new TextInputBuilder()
+            .setCustomId('gethertickets-order-offer-modal-input1')
+            .setLabel('Oferta')
+            .setPlaceholder('Wpisz tutaj ofertę...')
+            .setRequired(true)
+            .setStyle(TextInputStyle.Paragraph)
+            .setMaxLength(300)
+        )
       );
 
-      const messages = await orderChannel.messages.fetch();
-      await orderChannel.bulkDelete(messages);
-
-      const orderLogEmbed = EmbedBuilder.from(
-        interaction.message.embeds[0]
-      ).setTitle('Podsumowanie zamówienia');
-
-      await orderChannel.send({
-        embeds: [orderLogEmbed],
-      });
-    }
-
-    await interaction.message.edit({
-      embeds: [
-        EmbedBuilder.from(interaction.message.embeds[0])
-          .setTitle(`Zamówienie przyjęte!`)
-          .setColor('#008000')
-          .setAuthor({
-            name: interaction.user.username,
-            iconURL: interaction.user.displayAvatarURL({ dynamic: true }),
-          }),
-      ],
-      components: [],
-    });
-
-    const orderAcceptedEmbed = new EmbedBuilder()
-      .setTitle('Zamówienie zostało przyjęte!')
-      .setDescription(`Zamówienie zostało przyjęte przez ${interaction.user}!`)
-      .setColor('#008000');
-
-    await orderChannel.send({
-      content: `<@${result.userId}>`,
-      embeds: [orderAcceptedEmbed],
-    });
-
-    await orderChannel.permissionOverwrites.create(interaction.user, {
-      ViewChannel: true,
-      ReadMessageHistory: true,
-      SendMessages: true,
-      AttachFiles: true,
-    });
-
-    orderChannel.permissionOverwrites.edit(result.userId, {
-      SendMessages: true,
-      AttachFiles: true,
-    });
+    interaction.showModal(offerModal);
   },
 };
